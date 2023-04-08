@@ -6,27 +6,25 @@ import csv
 
 print("reading movies")
 
-# with open("movies.csv", mode="r", encoding="utf8") as csv_file:
-#     movies = [
-#         {k: v for k, v in row.items()}
-#         for row in csv.DictReader(csv_file, skipinitialspace=True)
-#     ]
+with open("movies.csv", mode="r", encoding="utf8") as csv_file:
+    movies2 = [
+        {k: v for k, v in row.items()}
+        for row in csv.DictReader(csv_file, skipinitialspace=True)
+    ]
 
 with open("movies.csv", mode="r", encoding="utf8") as csv_file:
     reader = csv.DictReader(csv_file)
     movies = {row.pop('movie_id'): row for row in reader}
 
-# with open("characters.csv", mode="r", encoding="utf8") as csv_file:
-#     characters2 = [
-#         {k: v for k, v in row.items()}
-#         for row in csv.DictReader(csv_file, skipinitialspace=True)
-#     ]
+with open("characters.csv", mode="r", encoding="utf8") as csv_file:
+    characters2 = [
+        {k: v for k, v in row.items()}
+        for row in csv.DictReader(csv_file, skipinitialspace=True)
+    ]
 
 with open("characters.csv", mode="r", encoding="utf8") as csv_file:
     reader = csv.DictReader(csv_file)
     characters = {row.pop('character_id'): row for row in reader}
-
-
 
 
 # with open("characters.csv", mode="r", encoding="utf8") as csv_file:
@@ -61,46 +59,117 @@ with open("lines.csv", mode="r", encoding="utf8") as csv_file:
 #     reader = csv.DictReader(csv_file)
 #     lines = {row.pop('conversation_id'): row for row in reader}
   
-# re read in all of them to make them into dictionary by key of movie id
-            
-# can combine characters and movie information through movie id
-# for each movie id, t
-# character id, movie id as keys - > movie information, conversations based on character id, lines based on conversations
-# for each character the top conversations needs to be 
-# conversations based on character id -> another character id
-# for those conversations can combine into number of lines
-# 
+movie_by_name = dict()
+count = 0
 
+for id in movies2:
+    name = id['title']
+    if name not in movie_by_name.keys():
+        movie_by_name[name] = [id]
+    else:
+        val: list = movie_by_name[name] 
+        val.append(id)
+        count += 1
+        movie_by_name[name] = val
 
-# character i1_id. 
+movie_by_year = dict()
+count = 0
+
+for id in movies2:
+    year = id['year']
+    if year not in movie_by_year.keys():
+        movie_by_year[year] = [id]
+    else:
+        val: list = movie_by_year[year] 
+        val.append(id)
+        count += 1
+        movie_by_year[year] = val
 
 
 character_names = dict()
+count = 0
 
-for id in characters:
-    name = characters[id]['name']
+for id in characters2:
+    name = id['name']
     if name not in character_names.keys():
-        character_names[name] = [characters[id]]
+        character_names[name] = [id]
     else:
         val: list = character_names[name] 
-        val.append(characters[id])
+        val.append(id)
+        count += 1
         character_names[name] = val
 
-print("names")
-print(character_names)
+movies_names = dict()
+count = 0
+
+for id in characters2:
+    characterId = id['character_id']
+    movieId = id['movie_id']
+    name = movies[movieId]['title']
+    if name not in movies_names.keys():
+        movies_names[name] = [id]
+    else:
+        val: list = movies_names[name] 
+        val.append(id)
+        movies_names[name] = val
+
+# movies_names = dict()
+# count = 0
+
+# for id in characters2:
+#     characterId = id['character_id']
+#     movieId = id['movie_id']
+#     name = movies[movieId]['title']
+#     if name not in movies_names.keys():
+#         movies_names[name] = [id]
+#     else:
+#         val: list = movies_names[name] 
+#         val.append(id)
+#         movies_names[name] = val
+ 
 
 
 lines_dict = dict()
 
+
 for line in lines:
     conversationId = line["conversation_id"]
     if conversationId not in lines_dict.keys():
-        # no character 1 information is found, then add
+
         lines_dict[conversationId] = [line]
     else:
         val: list = lines_dict[conversationId] 
         val.append(line)
+        
         lines_dict[conversationId] = val
+
+
+lines_dict_char = dict()
+
+count = 0
+for line in lines:
+    charId = line["character_id"]
+    if charId not in lines_dict_char.keys():
+        lines_dict_char[charId] = [line]
+    else:
+        val: list = lines_dict_char[charId] 
+        val.append(line)
+        count +=1
+        lines_dict_char[charId] = val
+
+lineID_charID = dict()
+
+for charId in lines_dict_char.keys():
+    currentLines = lines_dict_char[charId]
+    for line in currentLines:
+        movie_id = line['movie_id']
+        char_movie = (charId, movie_id)
+        if char_movie not in lineID_charID.keys():
+            lineID_charID[char_movie] = [line]
+        else:
+            val : list = lineID_charID[char_movie]
+            val.append(line)
+            lineID_charID[char_movie] = val
 
 
 
@@ -108,7 +177,6 @@ conversations_dict = dict()
 for conversation in conversations:
     character1ID = conversation["character1_id"]
     if character1ID not in conversations_dict.keys():
-        # no character 1 information is found, then add
         conversations_dict[character1ID] = [conversation]
     else:
         val: list = conversations_dict[character1ID] 
@@ -119,13 +187,11 @@ conversations_dict2 = dict()
 for conversation in conversations2:
     character2ID = conversation["character2_id"]
     if character2ID not in conversations_dict2.keys():
-        # no character 1 information is found, then add
         conversations_dict2[character2ID] = [conversation]
     else:
         val: list = conversations_dict2[character2ID] 
         val.append(conversation)
         conversations_dict2[character2ID] = val
-
 
 
 

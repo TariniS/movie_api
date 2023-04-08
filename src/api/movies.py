@@ -23,16 +23,40 @@ def get_movie(movie_id: str):
 
     """
 
-    for movie in db.movies:
-        if movie["movie_id"] == id:
-            print("movie found")
+    x = None
 
-    json = None
+    if movie_id in db.movies.keys():
+        print("movie found")
+    
+    
+        lines_sorted = sorted(db.lineID_charID.items(), key=lambda x: (-len(x[1])))
+        sorted_dict = dict(lines_sorted) 
 
-    if json is None:
+        top_characters = []
+
+        for key in sorted_dict:
+            if key[1] == movie_id:
+                currentRow = sorted_dict[key]
+                x = {
+                    "character_id":int(key[0]),
+                    "character":db.characters[key[0]]['name'], 
+                    "num_lines": len(currentRow)
+                }
+                if len(top_characters) < 5:
+                    top_characters.append(x)
+    
+
+        x = {
+            "movie_id":int(movie_id), 
+            "title": db.movies[movie_id]['title'],
+            "top_characters": top_characters
+
+        }
+
+    if x is None:
         raise HTTPException(status_code=404, detail="movie not found.")
 
-    return json
+    return x
 
 
 class movie_sort_options(str, Enum):
@@ -71,6 +95,40 @@ def list_movies(
     maximum number of results to return. The `offset` query parameter specifies the
     number of results to skip before returning results.
     """
-    json = None
+    x = None
+    offsetReduction = offset
+
+    json_vals = []
+
+    if sort == movie_sort_options.movie_title:
+
+      myKeys = list(db.movie_by_name.keys())
+      myKeys.sort()
+      sorted_dict = {i: db.movie_by_name[i] for i in myKeys}
+    
+    elif sort == movie_sort_options.year:
+
+      myKeys = list(db.movie_by_year.keys())
+      myKeys.sort()
+      sorted_dict = {i: db.movie_by_year[i] for i in myKeys}
+
+      for key in sorted_dict:
+        row : list = sorted_dict[key]
+        for item in row: 
+          x = {
+            "movie_id":int(item['movie_id']),
+            "movie_title": item['title'], 
+            "year":item['year'], 
+            "imdb_rating":float(item['imdb_rating']),
+            "imdb_votes":int(item['imdb_votes'])
+          }
+          if len(json_vals)<limit and offsetReduction<=0:
+            if name == "":
+              json_vals.append(x)
+            else:
+              if name.lower() in (item['name']).lower():
+                json_vals.append(x)
+            offsetReduction -=1
+          json = json_vals
 
     return json

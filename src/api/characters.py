@@ -142,14 +142,63 @@ def list_characters(
     number of results to skip before returning results.
     """
 
-    # myKeys = list(db.characters_dict.keys())
-    # myKeys.sort()
-    # sorted_dict = {i: db.characters_dict[i] for i in myKeys}
-    # print(list(sorted_dict.items())[:50])
-
-
-    # print("names")
-    # print(db.character_names)
-
     json = None
+    offsetReduction = offset
+
+    json_vals = []
+
+    if sort == character_sort_options.character:
+
+      myKeys = list(db.character_names.keys())
+      myKeys.sort()
+      sorted_dict = {i: db.character_names[i] for i in myKeys}
+    
+    elif sort == character_sort_options.movie:
+      myKeys = list(db.movies_names.keys())
+      myKeys.sort()
+      sorted_dict = {i: db.movies_names[i] for i in myKeys}
+    else:
+      lines_sorted = sorted(db.lineID_charID.items(), key=lambda x: (-len(x[1])))
+      sorted_dict = dict(lines_sorted)
+
+      for key in sorted_dict:
+        row : list  = sorted_dict[key]
+        x = {
+          "character_id":int(key[0]),
+          "character":db.characters[key[0]]['name'], 
+          "movie":db.movies[key[1]]['title'], 
+          "number_of_lines":len(row)
+        }
+
+        if len(json_vals)<limit and offsetReduction<=0:
+          if name == "":
+            json_vals.append(x)
+          else:
+            if name.lower() in (db.characters[key[0]]['name']).lower():
+              json_vals.append(x)
+          offsetReduction -=1
+        json = json_vals
+
+    
+    if sort == character_sort_options.character or sort == character_sort_options.movie:
+      for key in sorted_dict:
+        row : list = sorted_dict[key]
+        for item in row: 
+          x = {
+            "character_id":int(item['character_id']),
+            "character":db.characters[item['character_id']]['name'], 
+            "movie":db.movies[item['movie_id']]['title'], 
+            "number_of_lines":len(db.lineID_charID[(item['character_id'], item['movie_id'])])
+            
+
+          }
+          if len(json_vals)<limit and offsetReduction<=0:
+            if name == "":
+              json_vals.append(x)
+            else:
+              if name.lower() in (item['name']).lower():
+                json_vals.append(x)
+            offsetReduction -=1
+          json = json_vals
+    
     return json

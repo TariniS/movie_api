@@ -85,6 +85,23 @@ for id in movies2:
         count += 1
         movie_by_year[year] = val
 
+movie_by_imdb_rating = dict()
+count = 0
+
+for id in movies2:
+    rating = id['imdb_rating']
+    if rating not in movie_by_imdb_rating.keys():
+        movie_by_imdb_rating[rating] = [id]
+    else:
+        val: list = movie_by_imdb_rating[rating] 
+        val.append(id)
+        count += 1
+        movie_by_imdb_rating[rating] = val
+
+
+
+
+
 
 character_names = dict()
 count = 0

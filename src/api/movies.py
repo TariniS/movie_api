@@ -111,24 +111,30 @@ def list_movies(
       myKeys = list(db.movie_by_year.keys())
       myKeys.sort()
       sorted_dict = {i: db.movie_by_year[i] for i in myKeys}
+    
+    elif sort == movie_sort_options.rating:
 
-      for key in sorted_dict:
+      myKeys = list(db.movie_by_imdb_rating.keys())
+      myKeys.sort(reverse=True)
+      sorted_dict = {i: db.movie_by_imdb_rating[i] for i in myKeys}
+
+    for key in sorted_dict:
         row : list = sorted_dict[key]
         for item in row: 
-          x = {
+            x = {
             "movie_id":int(item['movie_id']),
             "movie_title": item['title'], 
             "year":item['year'], 
             "imdb_rating":float(item['imdb_rating']),
             "imdb_votes":int(item['imdb_votes'])
-          }
-          if len(json_vals)<limit and offsetReduction<=0:
-            if name == "":
-              json_vals.append(x)
-            else:
-              if name.lower() in (item['name']).lower():
-                json_vals.append(x)
+            }
+            if len(json_vals)<limit and offsetReduction<=0:
+                if name == "":
+                    json_vals.append(x)
+                else:
+                    if name.lower() in (item['title']).lower():
+                        json_vals.append(x)
             offsetReduction -=1
-          json = json_vals
+            json = json_vals
 
     return json

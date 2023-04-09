@@ -148,11 +148,9 @@ def list_characters(
     json_vals = []
 
     if sort == character_sort_options.character:
-
       myKeys = list(db.character_names.keys())
       myKeys.sort()
       sorted_dict = {i: db.character_names[i] for i in myKeys}
-    
     elif sort == character_sort_options.movie:
       myKeys = list(db.movies_names.keys())
       myKeys.sort()
@@ -170,7 +168,7 @@ def list_characters(
           "number_of_lines":len(row)
         }
 
-        if len(json_vals)<limit and offsetReduction<=0:
+        if len(json_vals) < limit and offsetReduction <= 0:
           if name == "":
             json_vals.append(x)
           else:
@@ -189,8 +187,6 @@ def list_characters(
             "character":db.characters[item['character_id']]['name'], 
             "movie":db.movies[item['movie_id']]['title'], 
             "number_of_lines":len(db.lineID_charID[(item['character_id'], item['movie_id'])])
-            
-
           }
           if len(json_vals)<limit and offsetReduction<=0:
             if name == "":

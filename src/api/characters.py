@@ -168,14 +168,19 @@ def list_characters(
           "number_of_lines":len(row)
         }
 
-        if len(json_vals) < limit and offsetReduction <= 0:
+        
+        
+        if len(json_vals) < limit:
           if name == "":
             json_vals.append(x)
           else:
             if name.lower() in (db.characters[key[0]]['name']).lower():
               json_vals.append(x)
-          offsetReduction -=1
-        json = json_vals
+        
+
+
+      json = json_vals[offset: len(json_vals)]
+        
 
     
     if sort == character_sort_options.character or sort == character_sort_options.movie:

@@ -27,11 +27,6 @@ with open("characters.csv", mode="r", encoding="utf8") as csv_file:
     characters = {row.pop('character_id'): row for row in reader}
 
 
-# with open("characters.csv", mode="r", encoding="utf8") as csv_file:
-#     reader = csv.DictReader(csv_file)
-#     characters_names = {row.pop('name'): row for row in reader}
-
-
 with open("conversations.csv", mode="r", encoding="utf8") as csv_file:
     conversations = [
         {k: v for k, v in row.items()}
@@ -44,20 +39,11 @@ with open("conversations.csv", mode="r", encoding="utf8") as csv_file:
     for row in csv.DictReader(csv_file, skipinitialspace=True)
 ]
 
-# with open("conversations.csv", mode="r", encoding="utf8") as csv_file:
-#     reader = csv.DictReader(csv_file)
-#     conversations = {row.pop('character1_id'): row for row in reader}
-
 with open("lines.csv", mode="r", encoding="utf8") as csv_file:
     lines = [
         {k: v for k, v in row.items()}
         for row in csv.DictReader(csv_file, skipinitialspace=True)
     ]
-
-
-# with open("lines.csv", mode="r", encoding="utf8") as csv_file:
-#     reader = csv.DictReader(csv_file)
-#     lines = {row.pop('conversation_id'): row for row in reader}
   
 movie_by_name = dict()
 count = 0
@@ -98,11 +84,6 @@ for id in movies2:
         count += 1
         movie_by_imdb_rating[rating] = val
 
-
-
-
-
-
 character_names = dict()
 count = 0
 
@@ -129,21 +110,6 @@ for id in characters2:
         val: list = movies_names[name] 
         val.append(id)
         movies_names[name] = val
-
-# movies_names = dict()
-# count = 0
-
-# for id in characters2:
-#     characterId = id['character_id']
-#     movieId = id['movie_id']
-#     name = movies[movieId]['title']
-#     if name not in movies_names.keys():
-#         movies_names[name] = [id]
-#     else:
-#         val: list = movies_names[name] 
-#         val.append(id)
-#         movies_names[name] = val
- 
 
 
 lines_dict = dict()

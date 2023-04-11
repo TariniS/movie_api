@@ -96,7 +96,6 @@ def list_movies(
     number of results to skip before returning results.
     """
     x = None
-    offsetReduction = offset
 
     json_vals = []
 
@@ -128,13 +127,13 @@ def list_movies(
             "imdb_rating":float(item['imdb_rating']),
             "imdb_votes":int(item['imdb_votes'])
             }
-            if len(json_vals)<limit and offsetReduction<=0:
+            if len(json_vals)<limit:
                 if name == "":
                     json_vals.append(x)
                 else:
                     if name.lower() in (item['title']).lower():
                         json_vals.append(x)
-            offsetReduction -=1
-            json = json_vals
+            
+            json = json_vals[offset: len(json_vals)]
 
     return json

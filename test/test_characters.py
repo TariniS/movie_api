@@ -35,17 +35,17 @@ def test_sort_filter():
     ) as f:
         assert response.json() == json.load(f)
 
-# def test_offset():
-#     response = client.get(
-#         "/characters/?name=amy&limit=50&offset=6&sort=number_of_lines"
-#     )
-#     assert response.status_code == 200
+def test_offset():
+    response = client.get(
+        "/characters/?name=amy&limit=50&offset=2&sort=number_of_lines"
+    )
+    assert response.status_code == 200
 
-#     with open(
-#         "test/characters/characters-name=amy&limit=50&offset=0&sort=number_of_lines.json",
-#         encoding="utf-8",
-#     ) as f:
-#         assert response.json() == json.load(f)
+    with open(
+        "test/characters/characters-name=amy&limit=50&offset=2&sort=number_of_lines.json",
+        encoding="utf-8",
+    ) as f:
+        assert response.json() == json.load(f)
     
 
 

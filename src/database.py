@@ -89,13 +89,13 @@ count = 0
 
 for id in characters2:
     name = id['name']
-    if name not in character_names.keys():
-        character_names[name] = [id]
+    if name.lower() not in character_names.keys():
+        character_names[name.lower()] = [id]
     else:
-        val: list = character_names[name] 
+        val: list = character_names[name.lower()] 
         val.append(id)
         count += 1
-        character_names[name] = val
+        character_names[name.lower()] = val
 
 movies_names = dict()
 count = 0
@@ -125,6 +125,19 @@ for line in lines:
         val.append(line)
         
         lines_dict[conversationId] = val
+
+
+lines_dict_char = dict()
+
+
+lines_by_id = dict()
+
+
+for line in lines:
+    lineId = line["line_id"]
+    if lineId not in lines_by_id.keys():
+
+        lines_by_id[lineId] = line
 
 
 lines_dict_char = dict()
@@ -175,6 +188,18 @@ for conversation in conversations2:
         val: list = conversations_dict2[character2ID] 
         val.append(conversation)
         conversations_dict2[character2ID] = val
+
+
+conversations_id_dict = dict()
+for conversation in conversations2:
+    convoId = conversation["conversation_id"]
+    if convoId not in conversations_id_dict.keys():
+        conversations_id_dict[convoId] = conversation
+
+
+
+
+
 
 
 

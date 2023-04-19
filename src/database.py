@@ -1,4 +1,5 @@
 import csv
+from src.datatypes import Character, Movie, Conversation, Line
 import os
 import io
 from supabase import Client, create_client
@@ -15,8 +16,8 @@ if supabase_api_key is None or supabase_url is None:
     )
 
 supabase: Client = create_client(supabase_url, supabase_api_key)
-supabase.auth.get_session()
 
+sess = supabase.auth.get_session()
 
 # TODO: Below is purely an example of reading and then writing a csv from supabase.
 # You should delete this code for your working example.
@@ -50,7 +51,6 @@ def upload_new_log():
     )
 # END PLACEHOLDER CODE
 
-print("reading movies")
 
 with open("movies.csv", mode="r", encoding="utf8") as csv_file:
     movies2 = [
@@ -71,13 +71,6 @@ with open("characters.csv", mode="r", encoding="utf8") as csv_file:
 with open("characters.csv", mode="r", encoding="utf8") as csv_file:
     reader = csv.DictReader(csv_file)
     characters = {row.pop('character_id'): row for row in reader}
-
-
-with open("conversations.csv", mode="r", encoding="utf8") as csv_file:
-    conversations = [
-        {k: v for k, v in row.items()}
-        for row in csv.DictReader(csv_file, skipinitialspace=True)
-    ]
 
 with open("conversations.csv", mode="r", encoding="utf8") as csv_file:
     conversations2 = [

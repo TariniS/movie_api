@@ -72,6 +72,13 @@ with open("characters.csv", mode="r", encoding="utf8") as csv_file:
     reader = csv.DictReader(csv_file)
     characters = {row.pop('character_id'): row for row in reader}
 
+
+with open("conversations.csv", mode="r", encoding="utf8") as csv_file:
+    conversations = [
+        {k: v for k, v in row.items()}
+        for row in csv.DictReader(csv_file, skipinitialspace=True)
+    ]
+
 with open("conversations.csv", mode="r", encoding="utf8") as csv_file:
     conversations2 = [
     {k: v for k, v in row.items()}
@@ -234,11 +241,3 @@ for conversation in conversations2:
     convoId = conversation["conversation_id"]
     if convoId not in conversations_id_dict.keys():
         conversations_id_dict[convoId] = conversation
-
-
-
-
-
-
-
-

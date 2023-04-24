@@ -1,5 +1,4 @@
 import csv
-from src.datatypes import Character, Movie, Conversation, Line
 import os
 import io
 from supabase import Client, create_client
@@ -25,27 +24,78 @@ sess = supabase.auth.get_session()
 # START PLACEHOLDER CODE
 
 # Reading in the log file from the supabase bucket
-log_csv = (
+# log_csv = (
+#     supabase.storage.from_("movie-api")
+#     .download("movie_conversations_log.csv")
+#     .decode("utf-8")
+# )
+#
+# logs = []
+# for row in csv.DictReader(io.StringIO(log_csv), skipinitialspace=True):
+#     logs.append(row)
+#
+#
+# # Writing to the log file and uploading to the supabase bucket
+# def upload_new_log():
+#     output = io.StringIO()
+#     csv_writer = csv.DictWriter(
+#         output, fieldnames=["post_call_time", "movie_id_added_to"]
+#     )
+#     csv_writer.writeheader()
+#     csv_writer.writerows(logs)
+#     supabase.storage.from_("movie-api").upload(
+#         "movie_conversations_log.csv",
+#         bytes(output.getvalue(), "utf-8"),
+#         {"x-upsert": "true"},
+#     )
+
+
+conversations_csv = (
     supabase.storage.from_("movie-api")
-    .download("movie_conversations_log.csv")
+    .download("conversations.csv")
     .decode("utf-8")
 )
 
-logs = []
-for row in csv.DictReader(io.StringIO(log_csv), skipinitialspace=True):
-    logs.append(row)
-
+conversations = []
+for row in csv.DictReader(io.StringIO(conversations_csv), skipinitialspace=True):
+    conversations.append(row)
 
 # Writing to the log file and uploading to the supabase bucket
-def upload_new_log():
+def upload_new_conversation():
     output = io.StringIO()
     csv_writer = csv.DictWriter(
-        output, fieldnames=["post_call_time", "movie_id_added_to"]
+        output, fieldnames=["conversation_id", "character1_id", "character2_id", "movie_id"]
     )
     csv_writer.writeheader()
-    csv_writer.writerows(logs)
+    csv_writer.writerows(conversations)
     supabase.storage.from_("movie-api").upload(
-        "movie_conversations_log.csv",
+        "conversations.csv",
+        bytes(output.getvalue(), "utf-8"),
+        {"x-upsert": "true"},
+    )
+
+
+
+lines_csv = (
+    supabase.storage.from_("movie-api")
+    .download("lines.csv")
+    .decode("utf-8")
+)
+
+lines = []
+for row in csv.DictReader(io.StringIO(lines_csv), skipinitialspace=True):
+    lines.append(row)
+
+# Writing to the log file and uploading to the supabase bucket
+def upload_new_line():
+    output = io.StringIO()
+    csv_writer = csv.DictWriter(
+        output, fieldnames=["line_id", "character_id", "movie_id", "conversation_id", "line_sort", "line_text"]
+    )
+    csv_writer.writeheader()
+    csv_writer.writerows(lines)
+    supabase.storage.from_("movie-api").upload(
+        "lines.csv",
         bytes(output.getvalue(), "utf-8"),
         {"x-upsert": "true"},
     )
@@ -72,24 +122,24 @@ with open("characters.csv", mode="r", encoding="utf8") as csv_file:
     reader = csv.DictReader(csv_file)
     characters = {row.pop('character_id'): row for row in reader}
 
+#
+# with open("conversations.csv", mode="r", encoding="utf8") as csv_file:
+#     conversations = [
+#         {k: v for k, v in row.items()}
+#         for row in csv.DictReader(csv_file, skipinitialspace=True)
+#     ]
+#
+# with open("conversations.csv", mode="r", encoding="utf8") as csv_file:
+#     conversations2 = [
+#     {k: v for k, v in row.items()}
+#     for row in csv.DictReader(csv_file, skipinitialspace=True)
+# ]
 
-with open("conversations.csv", mode="r", encoding="utf8") as csv_file:
-    conversations = [
-        {k: v for k, v in row.items()}
-        for row in csv.DictReader(csv_file, skipinitialspace=True)
-    ]
-
-with open("conversations.csv", mode="r", encoding="utf8") as csv_file:
-    conversations2 = [
-    {k: v for k, v in row.items()}
-    for row in csv.DictReader(csv_file, skipinitialspace=True)
-]
-
-with open("lines.csv", mode="r", encoding="utf8") as csv_file:
-    lines = [
-        {k: v for k, v in row.items()}
-        for row in csv.DictReader(csv_file, skipinitialspace=True)
-    ]
+# with open("lines.csv", mode="r", encoding="utf8") as csv_file:
+#     lines = [
+#         {k: v for k, v in row.items()}
+#         for row in csv.DictReader(csv_file, skipinitialspace=True)
+#     ]
   
 movie_by_name = dict()
 count = 0
@@ -172,7 +222,7 @@ for line in lines:
         
         lines_dict[conversationId] = val
 
-
+print(lines_dict.keys())
 lines_dict_char = dict()
 
 
@@ -226,7 +276,7 @@ for conversation in conversations:
         conversations_dict[character1ID] = val
 
 conversations_dict2 = dict()
-for conversation in conversations2:
+for conversation in conversations:
     character2ID = conversation["character2_id"]
     if character2ID not in conversations_dict2.keys():
         conversations_dict2[character2ID] = [conversation]
@@ -237,7 +287,7 @@ for conversation in conversations2:
 
 
 conversations_id_dict = dict()
-for conversation in conversations2:
+for conversation in conversations:
     convoId = conversation["conversation_id"]
     if convoId not in conversations_id_dict.keys():
         conversations_id_dict[convoId] = conversation

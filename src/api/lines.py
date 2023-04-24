@@ -19,6 +19,7 @@ def get_lines(line_id: str):
 
     json_vals = []
     lineId = line_id
+    print("inside lines.py", lineId)
     if line_id not in db.lines_by_id.keys():
         x = None
     lineText = db.lines_by_id[line_id]['line_text']
@@ -58,7 +59,7 @@ def get_lines_char(char_name: str):
         lst = db.character_names[char_name]
         for id in lst:
             char_ids.add(id["character_id"])
-        print(db.lines_dict_char["0"])
+
         for id in char_ids:
             for line in db.lines_dict_char[id]:
                 x = {

@@ -59,17 +59,17 @@ def test_offset():
     ) as f:
         assert response.json() == json.load(f)
 
-# # New test case
-# def test_sort_filter2():
-#     # Tests going past end of db
-#     response = client.get("/movies/?limit=250&offset=200&sort=year")
-#     assert response.status_code == 200
+# New test case
+def test_sort_filter2():
+    # Tests going past end of db
+    response = client.get("/movies/?limit=250&offset=200&sort=year")
+    assert response.status_code == 200
 
-#     with open(
-#         "test/movies/limit=250&offset=200&sort=year.json",
-#         encoding="utf-8",
-#     ) as f:
-#         assert response.json() == json.load(f)
+    with open(
+        "test/movies/limit=250&offset=200&sort=year.json",
+        encoding="utf-8",
+    ) as f:
+        assert response.json() == json.load(f)
 
 
 def test_404():

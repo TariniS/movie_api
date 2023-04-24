@@ -127,13 +127,13 @@ def list_movies(
             "imdb_rating":float(item['imdb_rating']),
             "imdb_votes":int(item['imdb_votes'])
             }
-            if len(json_vals)<limit:
-                if name == "":
+            if name == "":
+                json_vals.append(x)
+            else:
+                if name.lower() in (item['title']).lower():
                     json_vals.append(x)
-                else:
-                    if name.lower() in (item['title']).lower():
-                        json_vals.append(x)
             
-            json = json_vals[offset: len(json_vals)]
+            json = json_vals[offset: offset + limit]
+            print(len(json_vals))
 
     return json

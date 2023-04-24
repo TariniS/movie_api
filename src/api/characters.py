@@ -201,5 +201,5 @@ def list_characters(
                 json_vals.append(x)
             offsetReduction -=1
           json = json_vals[offset: len(json_vals)]
-    
+
     return json

@@ -140,7 +140,7 @@ def add_conversation(movie_id: int, conversation: ConversationJson):
                         print("updating db_lines_dict", str(new_convo_id))
 
 
-                        return new_line_id
+                        return new_convo_id
 
     return 0
 

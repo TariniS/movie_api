@@ -30,55 +30,53 @@ def get_character(id: str):
     """
 
     query = """WITH 
-  first_convos AS (
-    SELECT c.character_id, c.name, c.gender, m.title, cv.conversation_id AS convo_ids, cv.character2_id AS second_character_ids
-    FROM 
-      characters c
-    JOIN movies m ON c.movie_id = m.movie_id
-    JOIN conversations cv ON (cv.character1_id = c.character_id)
-    WHERE c.character_id = :character_id
-    GROUP BY c.character_id, c.name, c.gender, m.title, cv.character2_id, cv.conversation_id),
+                first_convos AS (
+                SELECT c.character_id, c.name, c.gender, m.title, cv.conversation_id AS convo_ids, cv.character2_id AS second_character_ids
+                FROM 
+                characters c
+                JOIN movies m ON c.movie_id = m.movie_id
+                JOIN conversations cv ON (cv.character1_id = c.character_id)
+                WHERE c.character_id = :character_id
+                GROUP BY c.character_id, c.name, c.gender, m.title, cv.character2_id, cv.conversation_id),
 
-  second_convos AS (
-    SELECT c.character_id, c.name, c.gender, m.title, cv.conversation_id AS convo_ids, cv.character1_id AS second_character_ids
-    FROM 
-      characters c
-    JOIN movies m ON c.movie_id = m.movie_id
-    JOIN conversations cv ON (cv.character2_id = c.character_id)
-    WHERE c.character_id = :character_id
-    GROUP BY c.character_id, c.name, c.gender, m.title, cv.character1_id, cv.conversation_id),
+                second_convos AS (
+                SELECT c.character_id, c.name, c.gender, m.title, cv.conversation_id AS convo_ids, cv.character1_id AS second_character_ids
+                FROM 
+                characters c
+                JOIN movies m ON c.movie_id = m.movie_id
+                JOIN conversations cv ON (cv.character2_id = c.character_id)
+                WHERE c.character_id = :character_id
+                GROUP BY c.character_id, c.name, c.gender, m.title, cv.character1_id, cv.conversation_id),
 
-  total_convos AS (
-    SELECT *
-    FROM
-      first_convos
-    UNION ALL
-    SELECT *
-    FROM
-      second_convos), 
-  lines_convos AS (
-    SELECT total_convos.character_id, total_convos.name, total_convos.gender, total_convos.title, total_convos.convo_ids, total_convos.second_character_ids, l.line_id
-    FROM total_convos
-    JOIN lines l ON total_convos.convo_ids = l.conversation_id
-  ),
-  final_convos AS (
-    SELECT lines_convos.character_id, lines_convos.name, lines_convos.gender, lines_convos.title, lines_convos.second_character_ids, COUNT(line_id) AS num_of_lines
-    FROM lines_convos
-    GROUP BY character_id, name, gender, title, second_character_ids
-  ),
-  final_final_convos AS (
-    SELECT final_convos.character_id, final_convos.name, final_convos.gender, final_convos.title, final_convos.second_character_ids, final_convos.num_of_lines, c.name AS secondName, c.gender AS secondGender
-    FROM final_convos
-    JOIN characters c on c.character_id = final_convos.second_character_ids
-    ORDER BY final_convos.num_of_lines DESC, second_character_ids
+                total_convos AS (
+                SELECT *
+                FROM
+                first_convos
+                UNION ALL
+                SELECT *
+                FROM
+                second_convos), 
+                
+                lines_convos AS (
+                SELECT total_convos.character_id, total_convos.name, total_convos.gender, total_convos.title, total_convos.convo_ids, total_convos.second_character_ids, l.line_id
+                FROM 
+                total_convos
+                JOIN lines l ON total_convos.convo_ids = l.conversation_id),
+                
+                final_convos AS (
+                SELECT lines_convos.character_id, lines_convos.name, lines_convos.gender, lines_convos.title, lines_convos.second_character_ids, COUNT(line_id) AS num_of_lines
+                FROM lines_convos
+                GROUP BY character_id, name, gender, title, second_character_ids),
+                
+                final_final_convos AS (
+                SELECT final_convos.character_id, final_convos.name, final_convos.gender, final_convos.title, final_convos.second_character_ids, final_convos.num_of_lines, c.name AS secondName, c.gender AS secondGender
+                FROM final_convos
+                JOIN characters c on c.character_id = final_convos.second_character_ids
+                ORDER BY final_convos.num_of_lines DESC, second_character_ids)
+
     
-  )
-
-    
-SELECT * 
-FROM final_final_convos"""
-
-
+            SELECT * 
+            FROM final_final_convos"""
 
     result = db.conn.execute(sqlalchemy.text(query), {'character_id': int(id)})
     character_id = 0
@@ -89,7 +87,7 @@ FROM final_final_convos"""
 
     top_conversations = []
     for row in result:
-        count +=1
+        count += 1
         character_id = row[0]
         character_name = row[1]
         movie = row[3]
@@ -166,17 +164,16 @@ def list_characters(
                           db.characters.c.name,
                           db.movies.c.title,
                           func.count(db.lines.c.line_id).label("count"))
-                          .select_from(
-                              db.characters
-                              .join(db.movies, db.characters.c.movie_id == db.movies.c.movie_id)
-                              .join(db.lines, db.characters.c.character_id == db.lines.c.character_id)
-                          )
-                          .group_by(db.characters.c.character_id, db.movies.c.title)
-                          .limit(limit)
-                          .offset(offset)
-                          .order_by(order_by, db.characters.c.character_id)
-                          )
-
+        .select_from(
+            db.characters
+            .join(db.movies, db.characters.c.movie_id == db.movies.c.movie_id)
+            .join(db.lines, db.characters.c.character_id == db.lines.c.character_id)
+        )
+        .group_by(db.characters.c.character_id, db.movies.c.title)
+        .limit(limit)
+        .offset(offset)
+        .order_by(order_by, db.characters.c.character_id)
+    )
 
     # filter only if name parameter is passed
     if name != "":

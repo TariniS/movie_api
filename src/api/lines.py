@@ -56,17 +56,17 @@ def get_lines_char(char_name: str):
     * `movie_id`: internal id of the given movie in which the character is speaking the line.
     """
 
+    print(char_name)
 
 
     query = """SELECT c.character_id, c.name, c.movie_id, l.line_id, l.line_text
 FROM characters c
 JOIN lines l ON l.character_id = c.character_id
 WHERE 
-c.name = :char_name
+c.name ILIKE :char_name
 ORDER BY line_id"""
 
     result = db.conn.execute(sqlalchemy.text(query), {'char_name': char_name})
-    print(char_name)
     count = 0
     vals = []
 
